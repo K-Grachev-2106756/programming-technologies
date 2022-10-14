@@ -1,11 +1,11 @@
 #include <QueueP/QueueP.h>
-//#include <vector>
-//#include <string>
+#include <algorithm>
+
 QueueP::QueueP()
 {
 	this->head = nullptr;
 }
-bool QueueP::is_Empty()
+bool QueueP::is_Empty() const
 {
 	return (this->head == nullptr);
 }
@@ -72,6 +72,36 @@ void QueueP::push(int key)
 	}
 }
 
+QueueP::QueueP(const QueueP& copy)
+{
+	if (copy.is_Empty()) return;
+	head = std::make_unique<Node>(copy.head->data);
+
+	Node* th = head.get();
+	Node* _copy = copy.head->next.get();
+	while (_copy != nullptr) {
+		th->next = std::make_unique<Node>();
+		th = th->next.get();
+		th->data = _copy->data;
+		_copy = _copy->next.get();
+	}
+	return;
+}
+
+QueueP& QueueP::operator=(const QueueP& rhs) 
+{
+	QueueP copy(rhs);
+	std::swap(*this, copy);
+	return *this;
+}
+void QueueP::pop()
+{
+	head = std::move(head->next);
+}
+int QueueP::top()
+{
+	return head->data;
+}
 std::ostream& operator<<(std::ostream& os, const QueueP& a)
 {
 	QueueP::Node* b = a.head.get();
@@ -82,28 +112,25 @@ std::ostream& operator<<(std::ostream& os, const QueueP& a)
 		{
 			b = b->next.get();
 			os << b->data;
-			
+
 		}
 	}
 	return os;
 }
-
 //std::istream& operator>>(std::istream& istream, QueueP& temp)
 //{
-//	std::string c;
-//	istream >> c;
-//	std::vector<int> a = std::vector<int>(c);
-//	//int c;
-//	//while (istream>>c)
-//	//{
-//	//	temp.push(c);
-//	//}
+//	int data;
+//	if (istream)
+//	{
+//		while (!(istream>>data).eof())
+//		{
+//			if (istream.bad())
+//			{
+//				break;
+//			}
+//			temp.push(data);
+//		}
+//	}
+//	return istream;
+//
 //}
-void QueueP::pop()
-{
-	head = std::move(head->next);
-}
-int QueueP::top()
-{
-	return head->data;
-}
