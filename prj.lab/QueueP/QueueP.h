@@ -19,7 +19,9 @@ public:
 	QueueP();
 	bool is_Empty();
 	void push(int key);
-
+	void pop();
+	int top();
 	~QueueP()=default;
 };
 std::ostream& operator<<(std::ostream& os, const QueueP& a);
+std::istream& operator>>(std::istream& istream, QueueP& temp);

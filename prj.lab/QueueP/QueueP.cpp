@@ -1,5 +1,6 @@
 #include <QueueP/QueueP.h>
-
+//#include <vector>
+//#include <string>
 QueueP::QueueP()
 {
 	this->head = nullptr;
@@ -84,7 +85,25 @@ std::ostream& operator<<(std::ostream& os, const QueueP& a)
 			
 		}
 	}
-	
-
 	return os;
+}
+
+//std::istream& operator>>(std::istream& istream, QueueP& temp)
+//{
+//	std::string c;
+//	istream >> c;
+//	std::vector<int> a = std::vector<int>(c);
+//	//int c;
+//	//while (istream>>c)
+//	//{
+//	//	temp.push(c);
+//	//}
+//}
+void QueueP::pop()
+{
+	head = std::move(head->next);
+}
+int QueueP::top()
+{
+	return head->data;
 }
