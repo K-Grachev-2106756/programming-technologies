@@ -33,43 +33,58 @@ void QueueP::push(int key)
 		else
 		{
 			Node* th = this->head.get();
-			Node* nxt = this->head.get();
-			while (nxt->next!=nullptr && th->data < key)
+			Node* nxt = this->head->next.get();
+			while (nxt->next!=nullptr && key>nxt->data)
 			{
 				std::swap(th, nxt);
 				nxt = th->next.get();
 			}
 			Node* tmp = NEWEST.get();
 
-			if (nxt->next==nullptr)
-			{
-				if (nxt->data>=key)
+			if (this->head.get() == th)
 				{
-					tmp->next = std::move(th->next);
-					th->next = std::move(NEWEST);
+				if (th->data <= key)
+				{
+					if (nxt->data>=key)
+					{
+						tmp->next = std::move(th->next);
+						th->next = std::move(NEWEST);
+					}
+					else
+					{
+						nxt->next = std::move(NEWEST);
+					}
+					
 				}
 				else
-				{
-					nxt->next = std::move(NEWEST);
-				}
-			}
-			else
-			{
-				if (this->head.get() == th)
 				{
 					NEWEST->next = std::move(head);
 					this->head = std::move(NEWEST);
 				}
+			}
+			else
+			{
+				if (nxt->next == nullptr)
+				{
+					if (nxt->data >= key)
+					{
+						tmp->next = std::move(th->next);
+						th->next = std::move(NEWEST);
+					}
+					else
+					{
+						nxt->next = std::move(NEWEST);
+					}
+				}
 				else
 				{
-					tmp->next = std::move(th->next);
-					th->next = std::move(NEWEST);
+						tmp->next = std::move(th->next);
+						th->next = std::move(NEWEST);
 				}
-				
-
 			}
 		}
 	}
+	std::cout << *this << std::endl;
 }
 
 QueueP::QueueP(const QueueP& copy)
@@ -107,30 +122,23 @@ std::ostream& operator<<(std::ostream& os, const QueueP& a)
 	QueueP::Node* b = a.head.get();
 	if (b != nullptr)
 	{
-		os << b->data;
+		os << b->data<<" ";
 		while (b->next != nullptr)
 		{
 			b = b->next.get();
-			os << b->data;
+			os << b->data<<" ";
 
 		}
 	}
 	return os;
 }
-//std::istream& operator>>(std::istream& istream, QueueP& temp)
-//{
-//	int data;
-//	if (istream)
-//	{
-//		while (!(istream>>data).eof())
-//		{
-//			if (istream.bad())
-//			{
-//				break;
-//			}
-//			temp.push(data);
-//		}
-//	}
-//	return istream;
-//
-//}
+std::istream& operator>>(std::istream& istream, QueueP& temp)
+{
+	int data;
+	while (istream>>data)
+	{
+		temp.push(data);
+	}
+	return istream;
+
+}

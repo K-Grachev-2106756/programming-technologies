@@ -3,5 +3,7 @@
 int main()
 {
 	QueueP a;
+	std::cin >> a;
 	std::cout << a;
+
 }

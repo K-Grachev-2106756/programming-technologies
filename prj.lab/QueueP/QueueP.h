@@ -26,4 +26,4 @@ public:
 	~QueueP()=default;
 };
 std::ostream& operator<<(std::ostream& os, const QueueP& a);
-//std::istream& operator>>(std::istream& istream, QueueP& temp);
+std::istream& operator>>(std::istream& istream, QueueP& temp);
