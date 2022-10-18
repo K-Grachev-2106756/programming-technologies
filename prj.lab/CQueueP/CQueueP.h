@@ -9,8 +9,8 @@ extern "C" {
 
 typedef enum {
     kGood = 0,   // all right
-    kHandlerError, // bad handler
-    kOutOfRange    // queue is empty
+    kHandlerError = 1, // bad handler
+    kOutOfRange = 2    // queue is empty
 } ErrorCode;
 
 typedef uint64_t QueueHandler;
