@@ -1,22 +1,25 @@
 #include<iostream>
 #include<QueueP/QueueP.h>
 #include<vector>
-
-typedef uint64_t QueueHandler;
+#include<CQueueP/CQueueP.h>
+#include<map>
+//singleton
 
 class Manager {
 public:
-	
+	//Очистка памяти 
+	//подключить сюды C файл 
+	std::map<uint64_t, QueueP> MainData;
 	Manager() = default;
 	~Manager() = default;
 	
-	int CreateQueueMan(QueueHandler* queue);
-	int CloneQueueMan(QueueHandler source, QueueHandler* queue);
-	int DestroyQueueMan(QueueHandler queue);
-	int PopMan(QueueHandler queue);
-	int PushMan(QueueHandler queue, int32_t value);
-	int IsEmptyMan(QueueHandler queue, int32_t* result);
-	int TopMan(QueueHandler queue, int32_t* result);
+	ErrorCode CreateQueueMan(QueueHandler* queue);
+	ErrorCode CloneQueueMan(QueueHandler source, QueueHandler* queue);
+	ErrorCode DestroyQueueMan(QueueHandler queue);
+	ErrorCode PopMan(QueueHandler queue);
+	ErrorCode PushMan(QueueHandler queue, int32_t value);
+	ErrorCode IsEmptyMan(QueueHandler queue, int32_t* result);
+	ErrorCode TopMan(QueueHandler queue, int32_t* result);
 
 private:
 };

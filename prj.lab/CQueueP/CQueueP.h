@@ -14,7 +14,8 @@ typedef enum {
 } ErrorCode;
 
 typedef uint64_t QueueHandler;
-
+const uint64_t EmptyHandler = ~0ULL;
+static QueueHandler Handle = 0;
 ErrorCode CreateQueue(QueueHandler* queue);
 
 ErrorCode CloneQueue(QueueHandler source, QueueHandler* queue);

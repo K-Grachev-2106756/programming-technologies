@@ -1,65 +1,48 @@
 #include <Manager/Manager.h>
 
-int Manager::CreateQueueMan(QueueHandler* queue)
+ErrorCode Manager::CreateQueueMan(QueueHandler* queue)
 {
-	try
+	//try
+	//{
+	//	std::shared_ptr<QueueP> ptr = std::make_shared<QueueP>();
+	//	queue = (uint64_t*)ptr.get();
+	//	return ErrorCode::kGood;
+	//	//как сделать так чтобы в мы могли изменить указатель в функции, а еще что не так с cdecl. ”ничтожаетс€ ли экзепл€р, который € здесь создаю и что делать, чтобы он осталс€? 
+	//}
+	//catch (const std::exception&)
+	//{
+	//	return ErrorCode::kHandlerError;
+	//}
+	if (*queue != EmptyHandler)
 	{
-		std::shared_ptr<QueueP> ptr = std::make_shared<QueueP>();
-		queue = (uint64_t*)ptr.get();
-		return 0;
-		//как сделать так чтобы в мы могли изменить указатель в функции, а еще что не так с cdecl. ”ничтожаетс€ ли экзепл€р, который € здесь создаю и что делать, чтобы он осталс€? 
+		return ErrorCode::kHandlerError;
 	}
-	catch (const std::exception&)
+	else
 	{
-		return 1;
+
+		Handle+=1;
+		*queue = Handle;
+		MainData[Handle] = QueueP();
+		return ErrorCode::kGood;
 	}
 }
-//int Manager::CloneQueueMan(QueueHandler source, QueueHandler* queue)
-//{
-//	/*QueueP tmp = *((QueueP*)queue);
-//	uint64_t b;
-//	QueueP f;
-//	b = (uint64_t)&f; 
-//
-//	QueueP L = *(QueueP*)b;*/
-//
-//	try
-//	{
-//		*((QueueP*)queue) = *((QueueP*)source);
-//		return 0;
-//	}
-//	catch (const std::exception&)
-//	{
-//		return 1;
-//	}
-//}
-//int Manager::DestroyQueueMan(QueueHandler queue)
-//{
-//
-//}
-//ErrorCode Manager::PopMan(QueueHandler queue)
-//{
-//
-//}
-//ErrorCode Manager::PushMan(QueueHandler queue, int32_t value)
-//{
-//
-//}
-//ErrorCode Manager::IsEmptyMan(QueueHandler queue, int32_t* result)
-//{
-//
-//}
-//ErrorCode Manager::TopMan(QueueHandler queue, int32_t* result)
-//{
-//
-//}
+ErrorCode CloneQueueMan(QueueHandler source, QueueHandler* queue)
+{
+	
+
+}
+//ErrorCode DestroyQueueMan(QueueHandler queue);
+//ErrorCode PopMan(QueueHandler queue);
+//ErrorCode PushMan(QueueHandler queue, int32_t value);
+//ErrorCode IsEmptyMan(QueueHandler queue, int32_t* result);
+//ErrorCode TopMan(QueueHandler queue, int32_t* result);
 
 
-extern "C" int CreateQueueC(QueueHandler * queue);
-extern "C" int CreateQueueC(QueueHandler* queue);
-extern "C" int CloneQueueC(QueueHandler source, QueueHandler* queue);
-extern "C" int DestroyQueueC(QueueHandler queue);
-extern "C" int PopC(QueueHandler queue);
-extern "C" int PushC(QueueHandler queue, int32_t value);
-extern "C" int IsEmptyC(QueueHandler queue, int32_t* result);
-extern "C" int TopC(QueueHandler queue, int32_t* result);
+extern "C" ErrorCode CreateQueueC(QueueHandler * queue);
+extern "C" ErrorCode CreateQueueC(QueueHandler* queue);
+extern "C" ErrorCode CloneQueueC(QueueHandler source, QueueHandler* queue);
+extern "C" ErrorCode DestroyQueueC(QueueHandler queue);
+extern "C" ErrorCode PopC(QueueHandler queue);
+extern "C" ErrorCode PushC(QueueHandler queue, int32_t value);
+extern "C" ErrorCode IsEmptyC(QueueHandler queue, int32_t* result);
+extern "C" ErrorCode TopC(QueueHandler queue, int32_t* result);
