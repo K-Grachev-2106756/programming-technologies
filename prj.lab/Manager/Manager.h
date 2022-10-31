@@ -1,17 +1,14 @@
-#include<iostream>
 #include<QueueP/QueueP.h>
-#include<vector>
 #include<CQueueP/CQueueP.h>
-#include<map>
+#include<unordered_map>
 //singleton
 
 class Manager {
 public:
 	//Очистка памяти 
-	//подключить сюды C файл 
-	std::map<uint64_t, QueueP> MainData;
+	std::unordered_map<QueueHandler, QueueP> MainData;
 	Manager() = default;
-	~Manager() = default;
+	~Manager();
 	
 	ErrorCode CreateQueueMan(QueueHandler* queue);
 	ErrorCode CloneQueueMan(QueueHandler source, QueueHandler* queue);

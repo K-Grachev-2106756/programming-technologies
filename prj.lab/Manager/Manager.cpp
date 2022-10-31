@@ -2,47 +2,134 @@
 
 ErrorCode Manager::CreateQueueMan(QueueHandler* queue)
 {
-	//try
-	//{
-	//	std::shared_ptr<QueueP> ptr = std::make_shared<QueueP>();
-	//	queue = (uint64_t*)ptr.get();
-	//	return ErrorCode::kGood;
-	//	//как сделать так чтобы в мы могли изменить указатель в функции, а еще что не так с cdecl. ”ничтожаетс€ ли экзепл€р, который € здесь создаю и что делать, чтобы он осталс€? 
-	//}
-	//catch (const std::exception&)
-	//{
-	//	return ErrorCode::kHandlerError;
-	//}
 	if (*queue != EmptyHandler)
 	{
 		return ErrorCode::kHandlerError;
 	}
 	else
 	{
-
-		Handle+=1;
 		*queue = Handle;
-		MainData[Handle] = QueueP();
+		//this->MainData[Handle] = QueueP(); <==== пофиксить
+		Handle += 1;
+		//как в строку карты засунуть экземпл€р класса (без ссылки на экземпл€р выводит ошибку линковщика "неразрешенный внешний символ")
 		return ErrorCode::kGood;
 	}
 }
-ErrorCode CloneQueueMan(QueueHandler source, QueueHandler* queue)
+
+ErrorCode Manager::CloneQueueMan(QueueHandler source, QueueHandler* queue)
 {
-	
-
+	if (*queue != EmptyHandler)
+	{
+		return ErrorCode::kHandlerError;
+	}
+	else
+	{
+		*queue = Handle;
+		//this->MainData[Handle] = QueueP(this->MainData[source]); //дл€ того чтобы работало нужно сделать нормально CreateQueueMan :)
+		Handle += 1;
+		return ErrorCode::kGood;
+	}
 }
-//ErrorCode DestroyQueueMan(QueueHandler queue);
-//ErrorCode PopMan(QueueHandler queue);
-//ErrorCode PushMan(QueueHandler queue, int32_t value);
-//ErrorCode IsEmptyMan(QueueHandler queue, int32_t* result);
-//ErrorCode TopMan(QueueHandler queue, int32_t* result);
 
+ErrorCode Manager::DestroyQueueMan(QueueHandler queue)
+{
+	if (this->MainData.find(queue) == this->MainData.end())
+	{
+		return ErrorCode::kHandlerError;
+	}
+	else
+	{
+		this->MainData.erase(this->MainData.find(queue));
+		return ErrorCode::kGood;
+	}
+}
 
-extern "C" ErrorCode CreateQueueC(QueueHandler * queue);
-extern "C" ErrorCode CreateQueueC(QueueHandler* queue);
-extern "C" ErrorCode CloneQueueC(QueueHandler source, QueueHandler* queue);
-extern "C" ErrorCode DestroyQueueC(QueueHandler queue);
-extern "C" ErrorCode PopC(QueueHandler queue);
-extern "C" ErrorCode PushC(QueueHandler queue, int32_t value);
-extern "C" ErrorCode IsEmptyC(QueueHandler queue, int32_t* result);
-extern "C" ErrorCode TopC(QueueHandler queue, int32_t* result);
+ErrorCode Manager::PopMan(QueueHandler queue)
+{
+	if (this->MainData.find(queue) == this->MainData.end())
+	{
+		return ErrorCode::kHandlerError;
+	}
+	else
+	{
+		this->MainData[queue].pop();
+		return ErrorCode::kGood;
+	}
+}
+
+ErrorCode Manager::PushMan(QueueHandler queue, int32_t value)
+{
+	if (this->MainData.find(queue) == this->MainData.end())
+	{
+		return ErrorCode::kHandlerError;
+	}
+	else
+	{
+		this->MainData[queue].push(value);
+		return ErrorCode::kGood;
+	}
+}
+
+ErrorCode Manager::IsEmptyMan(QueueHandler queue, int32_t* result)
+{
+	if (this->MainData.find(queue) == this->MainData.end())
+	{
+		return ErrorCode::kHandlerError;
+	}
+	else
+	{
+		*result = this->MainData[queue].is_Empty();
+		return ErrorCode::kGood;
+	}
+}
+
+ErrorCode Manager::TopMan(QueueHandler queue, int32_t* result)
+{
+	if (this->MainData.find(queue) == this->MainData.end())
+	{
+		return ErrorCode::kHandlerError;
+	}
+	else
+	{
+		*result = this->MainData[queue].top();
+		return ErrorCode::kGood;
+	}
+}
+
+Manager::~Manager()
+{
+	for (auto el : this->MainData)
+	{
+		el.second.~QueueP(); //не будет ли умирать таблица, если будет хранить недействительные удалЄнные данные? 
+		this->MainData.erase(el.first);
+	}
+}
+
+extern "C" ErrorCode CreateQueueC(QueueHandler* queue)
+{
+	return Man.CreateQueueMan(queue);
+}
+extern "C" ErrorCode CloneQueueC(QueueHandler source, QueueHandler* queue)
+{
+	return Man.CloneQueueMan(source, queue);
+}
+extern "C" ErrorCode DestroyQueueC(QueueHandler queue)
+{
+	return Man.DestroyQueueMan(queue);
+}
+extern "C" ErrorCode PopC(QueueHandler queue)
+{
+	return Man.PopMan(queue);
+}
+extern "C" ErrorCode PushC(QueueHandler queue, int32_t value)
+{
+	return Man.PushMan(queue, value);
+}
+extern "C" ErrorCode IsEmptyC(QueueHandler queue, int32_t* result)
+{
+	return Man.IsEmptyMan(queue, result);
+}
+extern "C" ErrorCode TopC(QueueHandler queue, int32_t* result)
+{
+	return Man.TopMan(queue, result);
+}
