@@ -84,7 +84,6 @@ void QueueP::push(int key)
 			}
 		}
 	}
-	std::cout << *this << std::endl;
 }
 
 QueueP::QueueP(const QueueP& copy)
@@ -106,7 +105,7 @@ QueueP::QueueP(const QueueP& copy)
 QueueP& QueueP::operator=(const QueueP& rhs) 
 {
 	QueueP copy(rhs);
-	std::swap(*this, copy);
+	this->head = std::move(copy.head);
 	return *this;
 }
 void QueueP::pop()
@@ -142,3 +141,12 @@ std::istream& operator>>(std::istream& istream, QueueP& temp)
 	return istream;
 
 }
+
+QueueP::~QueueP()
+{
+	while (!this->is_Empty())
+	{
+		this->pop();
+	}
+}
+

@@ -12,6 +12,7 @@ public:
 			this->data = value;
 			this->next = std::move(next_);
 		}
+		~Node() = default;
 	};
 
 	std::unique_ptr<Node> head;
@@ -22,7 +23,7 @@ public:
 	int top();
 	QueueP(const QueueP& copy);
 	QueueP& operator=(const QueueP& rhs);
-	~QueueP()=default;
+	~QueueP();
 };
 std::ostream& operator<<(std::ostream& os, const QueueP& a);
 std::istream& operator>>(std::istream& istream, QueueP& temp);

@@ -3,11 +3,16 @@
 
 int main()
 {	
-	uint64_t d = EmptyHandler;
-	uint64_t* p = &d;
-	std::cout << p<< " "<<*p << " "<<d;
-	ErrorCode a = Man.CreateQueueMan(p);
-	std::cout << std::endl;
-	std::cout <<*p;
+	for (size_t i = 0; i < 1000000; i++)
+	{
+		if (i%1000==0)
+		{
+			std::cout << i << std::endl;
+		}
+		uint64_t d = EmptyHandler;
+		uint64_t* p = &d;
+		ErrorCode a = Man.CreateQueueMan(p);
+	}
+	
 
 }

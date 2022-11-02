@@ -9,7 +9,7 @@ ErrorCode Manager::CreateQueueMan(QueueHandler* queue)
 	else
 	{
 		*queue = Handle;
-		//this->MainData[Handle] = QueueP(); <==== пофиксить
+		this->MainData[Handle] = QueueP(); 
 		Handle += 1;
 		//как в строку карты засунуть экземпл€р класса (без ссылки на экземпл€р выводит ошибку линковщика "неразрешенный внешний символ")
 		return ErrorCode::kGood;
@@ -96,14 +96,14 @@ ErrorCode Manager::TopMan(QueueHandler queue, int32_t* result)
 	}
 }
 
-Manager::~Manager()
-{
-	for (auto el : this->MainData)
-	{
-		el.second.~QueueP(); //не будет ли умирать таблица, если будет хранить недействительные удалЄнные данные? 
-		this->MainData.erase(el.first);
-	}
-}
+//Manager::~Manager()
+//{
+//	while (!MainData.empty())
+//	{
+//		//el.second.~QueueP(); //не будет ли умирать таблица, если будет хранить недействительные удалЄнные данные? 
+//		this->DestroyQueueMan(MainData.begin()->first);
+//	}
+//}
 
 extern "C" ErrorCode CreateQueueC(QueueHandler* queue)
 {

@@ -8,7 +8,7 @@ public:
 	//Очистка памяти 
 	std::unordered_map<QueueHandler, QueueP> MainData;
 	Manager() = default;
-	~Manager();
+	~Manager() = default;
 	
 	ErrorCode CreateQueueMan(QueueHandler* queue);
 	ErrorCode CloneQueueMan(QueueHandler source, QueueHandler* queue);
