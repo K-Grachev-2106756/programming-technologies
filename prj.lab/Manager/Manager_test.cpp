@@ -3,16 +3,19 @@
 
 int main()
 {	
-	for (size_t i = 0; i < 1000000; i++)
-	{
-		if (i%1000==0)
-		{
-			std::cout << i << std::endl;
-		}
-		uint64_t d = EmptyHandler;
-		uint64_t* p = &d;
-		ErrorCode a = Man.CreateQueueMan(p);
-	}
-	
 
+	uint64_t a = EmptyHandler;
+	uint64_t* b = &a;
+
+	Man.CreateQueueMan(b);
+	
+	uint64_t c = EmptyHandler;
+	uint64_t* d = &c;
+
+	Man.CloneQueueMan(0, d);
+
+	Man.PushMan(1, 1);
+	Man.PushMan(1, 1);
+
+	std::cout<<Man.MainData[1];
 }

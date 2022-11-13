@@ -110,11 +110,11 @@ QueueP& QueueP::operator=(const QueueP& rhs)
 }
 void QueueP::pop()
 {
-	head = std::move(head->next);
+	if (head!=nullptr) head = std::move(head->next);
 }
 int QueueP::top()
 {
-	return head->data;
+	if (head != nullptr) return head->data;
 }
 std::ostream& operator<<(std::ostream& os, const QueueP& a)
 {
