@@ -15,7 +15,7 @@ std::pair<std::chrono::duration<float>, std::chrono::duration<float>> Timer_for_
 	f2(n, vec);
 	end_output = std::chrono::high_resolution_clock::now();
 
-	return { end_input - start_input, end_output - start_output };	//вывод результатов замеров
+	return { (end_input - start_input), (end_output - start_output) };	//вывод результатов замеров
 }
 
 std::vector<int> input_first_example(int n, std::vector<int> vec) {
