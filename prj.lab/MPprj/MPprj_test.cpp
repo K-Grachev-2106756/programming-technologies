@@ -1,172 +1,109 @@
 #include<MPprj/MPprj.h>
-#include<algorithm>
-#include <random>
-#include<string>
+#include<fstream>
+/*MY OWN NOTES
 
-using namespace matplot;
-// m - число столовых
-// М - максимальный номер 
-// n - число посещений
+m - kitchens amount
+М - max number
+n - visits amount
 
-/*тесты:
+/*tests:
 	M = m - вектор случайная перестановка с уникальными значениями
 	отношения между переменными
 	k = m/M с шагом 0.5
 */
 
-//обработка измерений - отсеить слева и справа 10 процентов, гистограммы, усреднить значения 
-//много векторов, 
-//для каких n : от 1 до 200000 включительно с шагом? n{2,10,100,500,2500, 5000, 7500, 12500, 25000, 50000, 100000, 200000}
-//m от 1 до n
-//M сделаем как n. У сформированного вектора pop_back() и push значение из n. = ПОЛУЧИЛИ НАБОР ЧИСЕЛ. Вектор длиной n сделать из набора. 
-//строим графики t/n (n) для разных соотношений? 
+/* обработка измерений - отсеить слева и справа 10 процентов, гистограммы, усреднить значения
+много векторов, 
+для каких n : от 1 до 200000 включительно с шагом? n{2,10,100,500,2500, 5000, 7500, 12500, 25000, 50000, 100000, 200000}
+m от 1 до n
+M сделаем как n. У сформированного вектора pop_back() и push значение из n. = ПОЛУЧИЛИ НАБОР ЧИСЕЛ. Вектор длиной n сделать из набора. 
+строим графики t/n (n) для разных соотношений? */
 
-
-std::vector<int> N{ 16, 160, 1600, 3200, 6400,  12800, 16000, 
+const std::vector<int> N{ 16, 160, 1600, 3200, 6400,  12800, 16000, 
 19200, 22400, 25600, 28800, 32000, 35200, 38400, 41600, 44800, 48000, 
 51200, 54400, 57600, 60800, 64000, 67200, 70400, 73600, 76800, 80000, 
 83200, 86400, 89600, 92800, 96000, 99200, 102400, 105600, 108800, 112000, 
 115200, 118400, 121600, 124800, 128000, 131200, 134400, 137600, 140800, 
 144000, 147200, 150400, 153600, 156800, 160000, 163200, 166400, 169600, 
-172800, 176000, 179200, 182400, 185600, 188800, 192000, 195200, 198400}; //вектор значений n
-
-//std::vector<int> N{ 160,1600,3200,9600, 16000, 25600,41600, 60800, 92800, 128000,  160000,192000 };
+172800, 176000, 179200, 182400, 185600, 188800, 192000, 195200, 198400}; //n-values vector
 
 int main() {
-	std::vector<int>(*inp_first_ex)(int, std::vector<int>) = input_first_example;//указатели на тестируемые функции
-	std::vector<int>(*inp_sec_ex)(int, std::vector<int>) = input_second_example;
-	void(*outp_first_ex)(int, std::vector<int>) = output_first_example;
-	void(*outp_sec_ex)(int, std::vector<int>) = output_second_example;
-
-	//векторы для замеров в тесте m/M
+	//НЕ УДАЛЯЙ
 	const int test_amount = 10;
+
+	//vectors for m/M-test
 	std::vector<std::vector<double>> input_duration1(test_amount), input_duration2(test_amount), output_duration1(test_amount), output_duration2(test_amount);
 
-
 	for (int i = 1; i <= 8; i *= 2) { // m/M = 1, 1/2, ..., 1/8 
-		int m, M;
 		std::vector<int> test;
-		for (int k = 0; k < i; k++) test.push_back(0);
 		for (int n : N) {
-			M = n;
-			m = M / i;
-			for (int el = test.back() + 1; test.size() < n - i; el++) {
-				for (int k = 0; k < i; k++) {
-					test.push_back(el);
-				}
-			}
-			for (int k = 0; k < i; k++) test.push_back(n);
-			auto rng = std::default_random_engine{};
-			std::shuffle(test.begin(), test.end(), rng); //генерация тестовых данных
-
-			//сбор данных для каждого n для каждого отношения m/M
-			for (int k = 0; k < test_amount; k++) {
-				std::pair<std::chrono::duration<float>, std::chrono::duration<float>> duration1 = //получаем пары значений замеров
-					Timer_for_solution(inp_first_ex, outp_first_ex, n, test);
-				input_duration1[k].push_back((double)duration1.first.count());
-				output_duration1[k].push_back((double)duration1.second.count());
-
-				std::pair<std::chrono::duration<float>, std::chrono::duration<float>> duration2 = //замеры для второго решения
-					Timer_for_solution(inp_sec_ex, outp_sec_ex, n, test);
-				input_duration2[k].push_back((double)duration2.first.count());
-				output_duration2[k].push_back((double)duration2.second.count());
-			}
+			int M = n;
+			int m = M / i;
+			test_data_generator(i, n, test);
+			to_test(test_amount, n, test, input_duration1, input_duration2, output_duration1, output_duration2);
 		}
+	} //data had beeen generated
 
-	}
-
-	const int gen_size = N.size() * 4 / 5;
-	std::vector<double> gen_input_dur1(N.size()*4), gen_input_dur2(N.size()*4), gen_output_dur1(N.size()*4), gen_output_dur2(N.size()*4);
-
-	std::vector<std::vector<double>> y1(4), y2(4), y3(4), y4(4);
+	std::vector<std::string> names{ "input ex1", "input ex2", "output ex1", "output ex2" };
+	std::vector<std::vector<std::vector<double>>> y;
 	std::vector<double> x;
-	for (size_t i = N.size() / 10; i < N.size() * 9 / 10; i++) {
-		x.push_back(N[i] / 1000);
+
+	make_graphics(test_amount, N, names, x, y, input_duration1, input_duration2, output_duration1, output_duration2);
+
+	for (size_t k = 0; k < 4; k++) {
+		make_png(k, names[k], x, y); //pictures had been done
 	}
+	//НЕ УДАЛЯЙ
 
-	for (size_t k = 0; k < 4; k++)
-	{
-		for (size_t i = N.size()*k; i < N.size()*(k+1); i++) {
-			for (size_t k = 0; k < test_amount; k++) {
-				gen_input_dur1[i] += input_duration1[k][i];
-				gen_input_dur2[i] += input_duration2[k][i];
-				gen_output_dur1[i] += output_duration1[k][i];
-				gen_output_dur2[i] += output_duration2[k][i];
-			}
-		}
-		for (size_t i = N.size()*k + N.size() / 10, ind = 0; i < N.size() * k + N.size() * 9 / 10; i++, ind++) {
-			y1[k].push_back(gen_input_dur1[i] / test_amount / x[ind]);
-			y2[k].push_back(gen_input_dur2[i] / test_amount / x[ind]);
-			y3[k].push_back(gen_output_dur1[i] / test_amount / x[ind]);
-			y4[k].push_back(gen_output_dur2[i] / test_amount / x[ind]);
-		}	
-	}
-	
-	auto ax1 = matplot::nexttile(), ax2 = matplot::nexttile(), ax3 = matplot::nexttile(), ax4 = matplot::nexttile();
-
-	matplot::hold(matplot::on);
-	matplot::xlabel("n*e-3");
-	matplot::ylabel("t/n*e+3");
-	matplot::title("input ex1");
-
-	auto p1 = plot(ax1,x, y1[0]); 
-	p1->display_name("k=1");	
-	auto p2 = plot(ax1,x, y1[1]);
-	p2->display_name("0.5");	
-	auto p3 = plot(ax1, x, y1[2]);
-	p3->display_name("0.25");	
-	auto p4 = plot(ax1, x, y1[3]);
-	p4->display_name("0.125");
-	
-	matplot::legend();
-
-	matplot::hold(matplot::on);
-	matplot::xlabel("n*e-4");
-	matplot::ylabel("t/n*e+4");
-	matplot::title("input ex2");
-
-	auto p5 = plot(ax2, x, y2[0]);
-	p5->display_name("k=1");
-	auto p6 = plot(ax2, x, y2[1]);
-	p6->display_name("0.5");
-	auto p7 = plot(ax2, x, y2[2]);
-	p7->display_name("0.25");
-	auto p8 = plot(ax2, x, y2[3]);
-	p8->display_name("0.125");
-
-	matplot::legend();
-
-	matplot::hold(matplot::on);
-	matplot::xlabel("n*e-3");
-	matplot::ylabel("t/n*e+3");
-	matplot::title("output ex1");
-
-	auto p9 = plot(ax3, x, y3[0]);
-	p9->display_name("k=1");
-	auto p10 = plot(ax3, x, y3[1]);
-	p10->display_name("0.5");
-	auto p11 = plot(ax3, x, y3[2]);
-	p11->display_name("0.25");
-	auto p12 = plot(ax3, x, y3[3]);
-	p12->display_name("0.125");
-
-	matplot::legend();
-
-	matplot::hold(matplot::on);
-	matplot::xlabel("n*e-3");
-	matplot::ylabel("t/n*e+3");
-	matplot::title("output ex2");
-
-	auto p13 = plot(ax4, x, y4[0]);
-	p13->display_name("k=1");
-	auto p14 = plot(ax4, x, y4[1]);
-	p14->display_name("0.5");
-	auto p15 = plot(ax4, x, y4[2]);
-	p15->display_name("0.25");
-	auto p16 = plot(ax4, x, y4[3]);
-	p16->display_name("0.125");
-
-	matplot::legend();
-
-	matplot::show();
+	std::ofstream fout; //making a doc
+	fout.open("results.md");
+	fout << "[my repository](https://github.com/K-Grachev-2106756/grachev_k_y)";
+	fout << make_paragraph();
+	fout << "##introduction";
+	fout <<
+		make_paragraph() <<
+		"Everything is in English, because otherwise the characters turn into this: Абв"<<
+		make_paragraph() <<
+		"It's 2:10 a.m., but the pictures still don't load into the .md file, so I attach them in the message."<<
+		make_paragraph() <<
+		"!!!The results can be reproduced."<<
+		make_paragraph() <<
+		make_paragraph() <<
+		"The tests were run for each value of k for each value of n 10 times. The output data are the average values of t/n." <<
+		make_paragraph() <<
+		"In the pictures we can see graphs of the dependence of t/n on n with a changing coefficient k = m/ M (k = 1, 0.5, 0.25, 0.125 - no less, because with large amounts of data, gnuplot does not draw all graphs or does not draw anything)." <<
+		make_paragraph() <<
+		"For better scale and less data loss, t/n was multiplied by e+05 during calculations." <<
+		make_paragraph() <<
+		"On the left and right, the vectors of the calculated t/n values were cut off by 10% of their length." <<
+		make_paragraph() <<
+		"The tests were run separately for each graph: input_1, input_2, output_1, output_2." <<
+		make_paragraph() <<
+		"The results of the experiments are given below" <<
+		make_paragraph() <<
+		make_paragraph() <<
+		"##About graphics :" <<
+		make_paragraph() <<
+		"Input_1. In this graph, we can see that the more different the data, the worse the first program copes with data entry.Also note that our graph does not line up : the ratio t / n tends to zero as the argument n increases." <<
+		make_paragraph() <<
+		push_png(names[0]) <<
+		make_paragraph() <<
+		"Input_2.  This graph shows very strange lines. Therefore, it is difficult to judge the influence of the coefficient k for data entry of the second solution. Although on average, its speed exceeds the first solution." <<
+		make_paragraph() <<
+		push_png(names[1]) <<
+		make_paragraph() <<
+		"After analyzing the graphs, it can be noted that the second solution copes with its task more stably and faster." <<
+		make_paragraph() <<
+		"Output_1. The data processing time of the first solution quickly tends to zero with increasing n." <<
+		make_paragraph() <<
+		push_png(names[2]) <<
+		make_paragraph() <<
+		"Output_2. We can notice how high the value of the t/n ratio is. This suggests that the data processing speed for the second solution is very low. The first solution surpasses the second in places by hundreds of times." <<
+		make_paragraph() <<
+		push_png(names[3]) <<
+		make_paragraph() <<
+		"If we compare the data processing speed of both options, then the first solution wins unconditionally : in some places it wins the second one hundreds of times. Bottom line : although the second solution wins in the speed of information input, but it is not as significant as a total defeat in the speed of data processing. Our winner : the first decision." <<
+		make_paragraph() <<
+		make_paragraph();
+	fout.close();
 }
