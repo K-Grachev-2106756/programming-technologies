@@ -149,6 +149,6 @@ std::string make_paragraph() {
 }
 
 std::string push_png(std::string img) {
-	return "![img](C:\\Users\\user\\Desktop\\build\\prj.lab\\MPprj\\" + img+".png)";
+	return "![[" + img + ".png]]";
 }
 
