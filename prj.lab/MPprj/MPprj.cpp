@@ -152,3 +152,10 @@ std::string push_png(std::string img) {
 	return "![[" + img + ".png]]";
 }
 
+std::string make_heading(std::string name) {
+	return "\n## " + name + "\n";
+}
+
+std::string make_link(std::string name, std::string link) {
+	return "[" + name + "](" + link + ")";
+}

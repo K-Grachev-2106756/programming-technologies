@@ -57,21 +57,17 @@ int main() {
 
 	std::ofstream fout; //making a doc
 	fout.open("results.md");
-	fout << "[my repository](https://github.com/K-Grachev-2106756/grachev_k_y)";
-	fout << make_paragraph();
-	fout << "##introduction";
-	fout <<
-		make_paragraph() <<
+	fout << make_link("my repository","https://github.com/K-Grachev-2106756/grachev_k_y")<<
+		make_paragraph()<<
+		make_heading("Introduction")<< 
 		"Everything is in English, because otherwise the characters turn into this: Àáâ"<<
-		make_paragraph() <<
-		"It's 2:10 a.m., but the pictures still don't load into the .md file, so I attach them in the message."<<
 		make_paragraph() <<
 		"!!!The results can be reproduced."<<
 		make_paragraph() <<
-		make_paragraph() <<
 		"The tests were run for each value of k for each value of n 10 times. The output data are the average values of t/n." <<
 		make_paragraph() <<
-		"In the pictures we can see graphs of the dependence of t/n on n with a changing coefficient k = m/ M (k = 1, 0.5, 0.25, 0.125 - no less, because with large amounts of data, gnuplot does not draw all graphs or does not draw anything)." <<
+		"In the pictures we can see graphs of the dependence of t/n on n with a changing coefficient k = m/ M" 
+		"(k = 1, 0.5, 0.25, 0.125 - no less, because with large amounts of data, gnuplot does not draw all graphs or does not draw anything)." <<
 		make_paragraph() <<
 		"For better scale and less data loss, t/n was multiplied by e+05 during calculations." <<
 		make_paragraph() <<
@@ -81,9 +77,7 @@ int main() {
 		make_paragraph() <<
 		"The results of the experiments are given below" <<
 		make_paragraph() <<
-		make_paragraph() <<
-		"##About graphics :" <<
-		make_paragraph() <<
+		make_heading("About graphics :") <<
 		"Input_1. In this graph, we can see that the more different the data, the worse the first program copes with data entry.Also note that our graph does not line up : the ratio t / n tends to zero as the argument n increases." <<
 		make_paragraph() <<
 		push_png(names[0]) <<

@@ -35,3 +35,5 @@ void make_png(const int k, const std::string& names, std::vector<double>& x, std
 
 std::string make_paragraph();
 std::string push_png(std::string img);
+std::string make_link(std::string name, std::string link);
+std::string make_heading(std::string name);
