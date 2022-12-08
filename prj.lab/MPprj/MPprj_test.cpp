@@ -1,5 +1,5 @@
 #include<MPprj/MPprj.h>
-#include<fstream>
+
 /*MY OWN NOTES
 
 m - kitchens amount
@@ -27,7 +27,15 @@ const std::vector<int> N{ 16, 160, 1600, 3200, 6400,  12800, 16000,
 144000, 147200, 150400, 153600, 156800, 160000, 163200, 166400, 169600, 
 172800, 176000, 179200, 182400, 185600, 188800, 192000, 195200, 198400}; //n-values vector
 
+
+
 int main() {
+
+	//wchar_t* str = L"àüâüàüâàü";
+	//std::ofstream fout; //making a doc
+	//fout.open("results.md");
+	//fout<<ConvertToUTF8(str);
+
 	//ÍÅ ÓÄÀËßÉ
 	const int test_amount = 10;
 
@@ -55,49 +63,6 @@ int main() {
 	}
 	//ÍÅ ÓÄÀËßÉ
 
-	std::ofstream fout; //making a doc
-	fout.open("results.md");
-	fout << make_link("my repository","https://github.com/K-Grachev-2106756/grachev_k_y")<<
-		make_paragraph()<<
-		make_heading("Introduction")<< 
-		"Everything is in English, because otherwise the characters turn into this: Àáâ"<<
-		make_paragraph() <<
-		"!!!The results can be reproduced."<<
-		make_paragraph() <<
-		"The tests were run for each value of k for each value of n 10 times. The output data are the average values of t/n." <<
-		make_paragraph() <<
-		"In the pictures we can see graphs of the dependence of t/n on n with a changing coefficient k = m/ M" 
-		"(k = 1, 0.5, 0.25, 0.125 - no less, because with large amounts of data, gnuplot does not draw all graphs or does not draw anything)." <<
-		make_paragraph() <<
-		"For better scale and less data loss, t/n was multiplied by e+05 during calculations." <<
-		make_paragraph() <<
-		"On the left and right, the vectors of the calculated t/n values were cut off by 10% of their length." <<
-		make_paragraph() <<
-		"The tests were run separately for each graph: input_1, input_2, output_1, output_2." <<
-		make_paragraph() <<
-		"The results of the experiments are given below" <<
-		make_paragraph() <<
-		make_heading("About graphics :") <<
-		"Input_1. In this graph, we can see that the more different the data, the worse the first program copes with data entry.Also note that our graph does not line up : the ratio t / n tends to zero as the argument n increases." <<
-		make_paragraph() <<
-		push_png(names[0]) <<
-		make_paragraph() <<
-		"Input_2.  This graph shows very strange lines. Therefore, it is difficult to judge the influence of the coefficient k for data entry of the second solution. Although on average, its speed exceeds the first solution." <<
-		make_paragraph() <<
-		push_png(names[1]) <<
-		make_paragraph() <<
-		"After analyzing the graphs, it can be noted that the second solution copes with its task more stably and faster." <<
-		make_paragraph() <<
-		"Output_1. The data processing time of the first solution quickly tends to zero with increasing n." <<
-		make_paragraph() <<
-		push_png(names[2]) <<
-		make_paragraph() <<
-		"Output_2. We can notice how high the value of the t/n ratio is. This suggests that the data processing speed for the second solution is very low. The first solution surpasses the second in places by hundreds of times." <<
-		make_paragraph() <<
-		push_png(names[3]) <<
-		make_paragraph() <<
-		"If we compare the data processing speed of both options, then the first solution wins unconditionally : in some places it wins the second one hundreds of times. Bottom line : although the second solution wins in the speed of information input, but it is not as significant as a total defeat in the speed of data processing. Our winner : the first decision." <<
-		make_paragraph() <<
-		make_paragraph();
-	fout.close();
+	make_md_rus(names); //making report in Russian
+
 }

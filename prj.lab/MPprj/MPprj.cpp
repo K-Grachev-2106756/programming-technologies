@@ -1,5 +1,16 @@
 #include<MPprj/MPprj.h>
-
+#if defined(_MSC_VER) && _MSC_VER > 1310
+# define utf8(str)  ConvertToUTF8(L##str)
+const char* ConvertToUTF8(const wchar_t* pStr) {
+	static char szBuf[5120];
+	WideCharToMultiByte(CP_UTF8, 0, pStr, -1, szBuf, sizeof(szBuf), NULL, NULL);
+	return szBuf;
+}
+#else
+// Visual C++ 2003 and gcc will use the string literals as is, so the files 
+// should be saved as UTF-8. gcc requires the files to not have a UTF-8 BOM.
+# define utf8(str)  str
+#endif
 std::pair<std::chrono::duration<float>, std::chrono::duration<float>> Timer_for_solution
 (std::vector<int>(*f1)(int, std::vector<int>), void(*f2)(int, std::vector<int>), int n, std::vector<int> data) {
 	std::chrono::time_point<std::chrono::steady_clock> start_input, end_input, start_output, end_output;//переменные для хранения замеров
@@ -144,18 +155,178 @@ void make_png(const int k, const std::string& names, std::vector<double>& x, std
 }
 
 
-std::string make_paragraph() {
-	return "<br/><br/>";
+std::wstring make_paragraph() {
+	return L"<br/><br/>";
 }
 
-std::string push_png(std::string img) {
-	return "![[" + img + ".png]]";
+std::wstring push_png(std::string img) {
+	std::string tmp = "![[" + img + ".png]]";
+	return std::wstring(tmp.begin(), tmp.end());
 }
 
-std::string make_heading(std::string name) {
-	return "\n## " + name + "\n";
+
+
+std::wstring make_heading(std::wstring name) {
+	//std::string tmp = "\n## " + name +"\n";
+	//return std::wstring(tmp.begin(), tmp.end());
+	return L"\n## " + name + L"\n";
 }
 
-std::string make_link(std::string name, std::string link) {
-	return "[" + name + "](" + link + ")";
+std::wstring make_link(std::wstring name, std::wstring link) {
+	//std::string tmp = "[" + name + "](" + link + ")";
+	//return std::wstring(tmp.begin(), tmp.end());
+	return L"[" + name + L"](" + link + L")";
 }
+
+
+
+void make_md_rus(std::vector<std::string> names) {
+	std::wstring mainTEXT = make_link(L"Мой репозиторий", L"https://github.com/K-Grachev-2106756/grachev_k_y") +
+		make_paragraph() +
+		make_heading(L"Вступление") +
+		L"!!!Результаты могут быть воспроизведены." +
+		make_paragraph() +
+		L"Тесты проводились для каждого значения k для каждого значения n 10 раз. Выходные данные представляют собой средние значения t/n." +
+		make_paragraph() +
+		L"На рисунках мы можем видеть графики зависимости t/n от n с изменяющимся коэффициентом k = m/M"
+		L" (k = 1, 0,5, 0,25, 0,125 - не меньше, потому что при больших объемах данных gnuplot рисует не все графики или вообще ничего не рисует)." +
+		make_paragraph() +
+		L"Я не до конца разобрался в логике работы библиотеки matplot, поэтому не смог для каждого изображения добавить информацию о том, какого цвета какой график:" +
+		make_paragraph() +
+		L"Для k = 1 - голубой график, для k = 0.5 - красный, для k = 0.25 - желтый и для k = 0.125 - фиолетовый." +
+		make_paragraph() +
+		L"Для лучшего масштаба и меньшей потери данных t/n было умножено на e+05 во время вычислений." +
+		make_paragraph() +
+		L"Слева и справа векторы вычисленных значений t/n были обрезаны на 10% от их длины." +
+		make_paragraph() +
+		L"Тесты проводились отдельно для каждого графика: input_1, input_2, output_1, output_2." +
+		make_paragraph() +
+		L"Результаты экспериментов приведены ниже." +
+		make_paragraph() +
+		make_heading(L"О графиках :") +
+		L"Input_1. На этом графике мы видим, что чем больше отличаются данные, тем хуже первая программа справляется с вводом данных. Также обратите внимание, что наш график не выстраивается в линию: отношение t / n стремится к нулю по мере увеличения аргумента n." +
+		make_paragraph() +
+		push_png(names[0]) +
+		make_paragraph() +
+		L"Input_2. На этом графике показаны очень странные линии. Следовательно, трудно судить о влиянии коэффициента k на ввод данных второго решения. Хотя в среднем его скорость превышает первое решение." +
+		make_paragraph() +
+		push_png(names[1]) +
+		make_paragraph() +
+		L"Проанализировав графики, можно отметить, что второе решение справляется со своей задачей более стабильно и быстрее." +
+		make_paragraph() +
+		L"Output_1. Время обработки данных первого решения быстро стремится к нулю с увеличением n." +
+		make_paragraph() +
+		push_png(names[2]) +
+		make_paragraph() +
+		L"Output_2. Мы можем заметить, насколько велико значение отношения t/n. Это говорит о том, что скорость обработки данных для второго решения очень низкая. Первое решение превосходит второе местами в сотни раз." +
+		make_paragraph() +
+		push_png(names[3]) +
+		make_paragraph() +
+		L"Если сравнить скорость обработки данных обоих вариантов, то первое решение выигрывает безоговорочно: в некоторых местах оно выигрывает у второго в сотни раз. Итог: хотя второе решение выигрывает в скорости ввода информации, но это не так существенно, как полное поражение в скорости обработки данных. Наш победитель: первое решение." +
+		make_paragraph() +
+		make_paragraph();
+
+	const wchar_t* str = mainTEXT.c_str();
+	std::ofstream fout; //making a doc
+	fout.open("results_rus.md");
+	fout << ConvertToUTF8(str);
+	fout.close();
+	delete str;
+}
+
+/*fout << make_link("Мой репозиторий", "https://github.com/K-Grachev-2106756/grachev_k_y") <<
+		make_paragraph() <<
+		make_heading("Вступление") <<
+		"!!!Результаты могут быть воспроизведены." <<
+		make_paragraph() <<
+		"Тесты проводились для каждого значения k для каждого значения n 10 раз. Выходные данные представляют собой средние значения t/n." <<
+		make_paragraph() <<
+		"На рисунках мы можем видеть графики зависимости t/n от n с изменяющимся коэффициентом k = m/M"
+		"(k = 1, 0,5, 0,25, 0,125 - не меньше, потому что при больших объемах данных gnuplot рисует не все графики или вообще ничего не рисует)." <<
+		make_paragraph() <<
+		"Я не доконца разобрался в логике работы библиотеки matplot, поэтому не смог для каждого изображения добавить информацию о том, какого цвета какой график:"<<
+		make_paragraph()<<
+		"Для k = 1 - голубой график, для k = 0.5 - красный, для k = 0.25 - желтый и для k = 0.125 - фиолетовый."<<
+		make_paragraph()<<
+		"Для лучшего масштаба и меньшей потери данных t/n было умножено на e+05 во время вычислений." <<
+		make_paragraph() <<
+		"Слева и справа векторы вычисленных значений t/n были обрезаны на 10% от их длины." <<
+		make_paragraph() <<
+		"Тесты проводились отдельно для каждого графика: input_1, input_2, output_1, output_2." <<
+		make_paragraph() <<
+		"Результаты экспериментов приведены ниже." <<
+		make_paragraph() <<
+		make_heading("О графиках :") <<
+		"Input_1. На этом графике мы видим, что чем больше отличаются данные, тем хуже первая программа справляется с вводом данных. Также обратите внимание, что наш график не выстраивается в линию: отношение t / n стремится к нулю по мере увеличения аргумента n." <<
+		make_paragraph() <<
+		push_png(names[0]) <<
+		make_paragraph() <<
+		"Input_2. На этом графике показаны очень странные линии. Следовательно, трудно судить о влиянии коэффициента k на ввод данных второго решения. Хотя в среднем его скорость превышает первое решение." <<
+		make_paragraph() <<
+		push_png(names[1]) <<
+		make_paragraph() <<
+		"Проанализировав графики, можно отметить, что второе решение справляется со своей задачей более стабильно и быстрее." <<
+		make_paragraph() <<
+		"Output_1. Время обработки данных первого решения быстро стремится к нулю с увеличением n." <<
+		make_paragraph() <<
+		push_png(names[2]) <<
+		make_paragraph() <<
+		"Output_2. Мы можем заметить, насколько велико значение отношения t/n. Это говорит о том, что скорость обработки данных для второго решения очень низкая. Первое решение превосходит второе местами в сотни раз." <<
+		make_paragraph() <<
+		push_png(names[3]) <<
+		make_paragraph() <<
+		"Если сравнить скорость обработки данных обоих вариантов, то первое решение выигрывает безоговорочно: в некоторых местах оно выигрывает у второго в сотни раз. Итог: хотя второе решение выигрывает в скорости ввода информации, но это не так существенно, как полное поражение в скорости обработки данных. Наш победитель: первое решение." <<
+		make_paragraph() <<
+		make_paragraph();*/
+
+//void make_md_eng(std::vector<std::string> names) {
+//	std::ofstream fout; //making a doc
+//	fout.open("results_eng.md");
+//	fout << make_link("my repository", "https://github.com/K-Grachev-2106756/grachev_k_y") <<
+//		make_paragraph() <<
+//		make_heading("Introduction") <<
+//		"!!!The results can be reproduced." <<
+//		make_paragraph() <<
+//		"The tests were run for each value of k for each value of n 10 times. The output data are the average values of t/n." <<
+//		make_paragraph() <<
+//		"In the pictures we can see graphs of the dependence of t/n on n with a changing coefficient k = m/ M"
+//		"(k = 1, 0.5, 0.25, 0.125 - no less, because with large amounts of data, gnuplot does not draw all graphs or does not draw anything)." <<
+//		make_paragraph() <<
+//		"I did not fully understand the logic of the matplot library, so I could not add information for each image about which color is which graph:" <<
+//		make_paragraph() <<
+//		"For k = 1 - blue graph, for k = 0.5 - red, for k = 0.25 - yellow and for k = 0.125 - purple." <<
+//		make_paragraph() <<
+//		"For better scale and less data loss, t/n was multiplied by e+05 during calculations." <<
+//		make_paragraph() <<
+//		"On the left and right, the vectors of the calculated t/n values were cut off by 10% of their length." <<
+//		make_paragraph() <<
+//		"The tests were run separately for each graph: input_1, input_2, output_1, output_2." <<
+//		make_paragraph() <<
+//		"The results of the experiments are given below" <<
+//		make_paragraph() <<
+//		make_heading("About graphics :") <<
+//		"Input_1. In this graph, we can see that the more different the data, the worse the first program copes with data entry.Also note that our graph does not line up : the ratio t / n tends to zero as the argument n increases." <<
+//		make_paragraph() <<
+//		push_png(names[0]) <<
+//		make_paragraph() <<
+//		"Input_2.  This graph shows very strange lines. Therefore, it is difficult to judge the influence of the coefficient k for data entry of the second solution. Although on average, its speed exceeds the first solution." <<
+//		make_paragraph() <<
+//		push_png(names[1]) <<
+//		make_paragraph() <<
+//		"After analyzing the graphs, it can be noted that the second solution copes with its task more stably and faster." <<
+//		make_paragraph() <<
+//		"Output_1. The data processing time of the first solution quickly tends to zero with increasing n." <<
+//		make_paragraph() <<
+//		push_png(names[2]) <<
+//		make_paragraph() <<
+//		"Output_2. We can notice how high the value of the t/n ratio is. This suggests that the data processing speed for the second solution is very low. The first solution surpasses the second in places by hundreds of times." <<
+//		make_paragraph() <<
+//		push_png(names[3]) <<
+//		make_paragraph() <<
+//		"If we compare the data processing speed of both options, then the first solution wins unconditionally : in some places it wins the second one hundreds of times. Bottom line : although the second solution wins in the speed of information input, but it is not as significant as a total defeat in the speed of data processing. Our winner : the first decision." <<
+//		make_paragraph() <<
+//		make_paragraph();
+//	fout.close();
+//}
+
+

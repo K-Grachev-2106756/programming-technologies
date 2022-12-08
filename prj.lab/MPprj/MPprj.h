@@ -13,6 +13,8 @@
 #include <iterator>
 #include <unordered_set>
 
+#include<fstream>
+
 std::pair<std::chrono::duration<float>, std::chrono::duration<float>> Timer_for_solution
 (std::vector<int>(*f1)(int, std::vector<int>), void(*f2)(int, std::vector<int>), int n, std::vector<int> data);
 
@@ -33,7 +35,13 @@ void make_graphics(const int test_amount, const std::vector<int>& N, const std::
 
 void make_png(const int k, const std::string& names, std::vector<double>& x, std::vector<std::vector<std::vector<double>>>& y);
 
-std::string make_paragraph();
-std::string push_png(std::string img);
-std::string make_link(std::string name, std::string link);
-std::string make_heading(std::string name);
+std::wstring make_paragraph();
+std::wstring push_png(std::string img);
+std::wstring make_link(std::wstring name, std::wstring link);
+std::wstring make_heading(std::wstring name);
+
+void make_md_rus(std::vector<std::string> names);
+
+//void make_md_eng(std::vector<std::string> names);
+
+
